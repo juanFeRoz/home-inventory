@@ -1,1 +1,3 @@
 backend/flake.*
+backend/.direnv
+backend/.envrc
