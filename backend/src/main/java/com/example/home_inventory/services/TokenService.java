@@ -19,7 +19,7 @@ import java.util.Date;
 
 @Service
 @AllArgsConstructor
-public class TokenService {
+public class  TokenService {
 
     private final JwtConfig jwtConfig;
 
