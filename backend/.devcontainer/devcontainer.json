@@ -15,9 +15,9 @@
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	"forwardPorts": [8080],
-	"updateRemoteUserUID": true,
-	"remoteUser": "vscode",
-	"postCreateCommand": "sudo chown -R vscode:vscode /workspaces && ./mvnw clean package"
+	// "updateRemoteUserUID": true,
+	// "remoteUser": "vscode",
+	// "postCreateCommand": "sudo chown -R vscode:vscode /workspaces && ./mvnw clean package"
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "java -version",
@@ -26,5 +26,5 @@
 	// "customizations": {},
 
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root"
+	"remoteUser": "root"
 }
