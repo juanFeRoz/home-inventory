@@ -1,4 +1,4 @@
-package com.example.home_inventory.Producto;
+package com.example.home_inventory.models;
 
 import java.time.LocalDate;
 
