@@ -16,6 +16,12 @@ jobs:
     steps:
       - name: Checkout repository code
         uses: actions/checkout@v4
+      
+      - name: Create .env file
+        run: |
+            touch .env
+            echo "${{secrets.TEST_SECRETS}}" >> .env
+
 
       # ------------------------ CI: BUILD & PUSH TO DOCKER HUB ------------------------
       - name: Set up Docker Buildx
