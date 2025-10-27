@@ -5,6 +5,7 @@ COPY .mvn/ .mvn
 COPY mvnw pom.xml ./
 RUN ./mvnw dependency:go-offline
 COPY src ./src
+COPY .env ./.env
 RUN ./mvnw package -Dmaven.test.skip=true
 
 # Stage 2: Create the final runtime image
