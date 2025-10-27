@@ -1,3 +1,4 @@
+
 name: CI/CD DockerHub to Cloud Run
 
 on:
@@ -18,9 +19,9 @@ jobs:
         uses: actions/checkout@v4
       
       - name: Create .env file
+        working-directory: ./backend
         run: |
-            touch backend/.env
-            echo "${{secrets.ENV_SECRETS}}" >> .env
+            echo "${{secrets.ENV_SECRETS}}" > .env
 
 
       # ------------------------ CI: BUILD & PUSH TO DOCKER HUB ------------------------
