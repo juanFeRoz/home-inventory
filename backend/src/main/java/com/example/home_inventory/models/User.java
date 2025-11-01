@@ -25,8 +25,11 @@ public class User implements UserDetails {
     private ObjectId id;
 
     private String username;
+
     private String email;
+
     private String password;
+
     private List<String> role;
 
     public User(String username){

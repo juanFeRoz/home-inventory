@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import com.example.home_inventory.models.Producto;
 import com.example.home_inventory.repository.ProductoRepository;
 import com.example.home_inventory.repository.LugarRepositorio;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 
 @Service
@@ -51,4 +53,22 @@ public class ProductoService {
 
         return saved;
     }
+
+    @Transactional
+    public boolean deleteProductoById(String id) {
+        Optional<Producto> opt = productoRepository.findById(id);
+        if (!opt.isPresent()) {
+            return false;
+        }
+        Producto producto = opt.get();
+        if (producto.getCantidad() > 1) {
+            producto.setCantidad(producto.getCantidad() - 1);
+            productoRepository.save(producto);
+        } else {
+            productoRepository.deleteById(id);
+        }
+        return true;
+    }
+
+
 }

@@ -11,12 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.home_inventory.models.Producto;
 import com.example.home_inventory.services.ProductoService;
@@ -38,9 +33,9 @@ public class ProductoController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Producto> createProducto(@RequestBody Map<String, String> payload) {
+    public ResponseEntity<?> createProducto(@RequestBody Map<String, String> payload) {
         if (payload == null || payload.get("nombre") == null || payload.get("nombre").isBlank()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("El nombre es obligatorio",HttpStatus.BAD_REQUEST);
         }
 
         // parse integers safely
@@ -52,7 +47,12 @@ public class ProductoController {
             if (payload.get("cantidadMinima") != null)
                 cantidadMinima = Integer.parseInt(payload.get("cantidadMinima"));
         } catch (NumberFormatException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Formato de número inválido", HttpStatus.BAD_REQUEST);
+        }
+
+        //cantidad debe ser >= cantidadMinima
+        if (cantidad < cantidadMinima) {
+            return new ResponseEntity<>("La cantidad no puede ser menor a la cantidad mínima", HttpStatus.BAD_REQUEST);
         }
 
         // parse date with expected format dd-MM-yyyy (e.g. 10-10-2025)
@@ -62,7 +62,7 @@ public class ProductoController {
                 DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd-MM-yyyy");
                 expiracion = LocalDate.parse(payload.get("expiracion"), fmt);
             } catch (DateTimeParseException e) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("El formato de fecha dd-MM-yyyy es incorrecto", HttpStatus.BAD_REQUEST);
             }
         }
 
@@ -75,5 +75,16 @@ public class ProductoController {
                 payload.get("nombreLugar"));
 
         return new ResponseEntity<Producto>(created, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteProductoById(@PathVariable String id) {
+        boolean deleted = productoService.deleteProductoById(id);
+
+        if (deleted) {
+            return new ResponseEntity<>("Producto eliminado correctamente",HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Producto no encontrado",HttpStatus.NOT_FOUND);
+        }
     }
 }
