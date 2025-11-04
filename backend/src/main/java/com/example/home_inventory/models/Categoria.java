@@ -1,17 +1,16 @@
 package com.example.home_inventory.models;
 
-import java.time.LocalDate;
-
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
-
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "Producto")
+@Document(collection = "Categoria")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Producto {
+public class Categoria {
 
     @Id
     private String id;
@@ -20,11 +19,4 @@ public class Producto {
 
     private String descripcion;
 
-    private int cantidad;
-
-    private int cantidadMinima;
-
-    private LocalDate expiracion;
-
-    private Categoria categoria;
 }

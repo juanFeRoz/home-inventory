@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.home_inventory.models.Categoria;
+import com.example.home_inventory.repository.CategoriaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
@@ -17,11 +19,15 @@ import java.util.ArrayList;
 
 @Service
 public class ProductoService {
+
     @Autowired
     private ProductoRepository productoRepository;
 
     @Autowired
     private LugarRepositorio lugarRepositorio;
+
+    @Autowired
+    private CategoriaRepository categoriaRepository;
 
     public List<Producto> findAllLugares() {
         return productoRepository.findAll();
@@ -70,5 +76,24 @@ public class ProductoService {
         return true;
     }
 
+    public Producto asignarCategoria(String productoId, String categoriaNombre) {
+        // Buscar el producto
+        Optional<Producto> productoOpt = productoRepository.findById(productoId);
+        if (productoOpt.isEmpty()) {
+            throw new IllegalArgumentException("No existe el producto especificado");
+        }
 
+        // Buscar la categoría
+        String categoriaNormalizada = categoriaNombre.toLowerCase().trim();
+        Optional<Categoria> categoriaOpt = categoriaRepository.findByNombre(categoriaNormalizada);
+        if (categoriaOpt.isEmpty()) {
+            throw new IllegalArgumentException("No existe la categoría especificada");
+        }
+
+        // Asignar la categoría al producto
+        Producto producto = productoOpt.get();
+        producto.setCategoria(categoriaOpt.get());
+
+        return productoRepository.save(producto);
+    }
 }

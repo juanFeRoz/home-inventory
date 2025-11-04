@@ -87,4 +87,15 @@ public class ProductoController {
             return new ResponseEntity<>("Producto no encontrado",HttpStatus.NOT_FOUND);
         }
     }
+
+    @PutMapping("/{id}/categoria")
+    public ResponseEntity<?> asignarCategoria(@PathVariable String id, @RequestBody Map<String, String> request) {
+        try {
+            String categoriaNombre = request.get("categoria");
+            Producto producto = productoService.asignarCategoria(id, categoriaNombre);
+            return ResponseEntity.ok(producto);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 }
