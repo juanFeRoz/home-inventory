@@ -2,6 +2,7 @@ package com.example.home_inventory.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
@@ -37,6 +38,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers("/api/v1/user/**").permitAll()
                         .requestMatchers("/api/v1/home/**").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/grupos-familiares/**").authenticated()
+                        .requestMatchers("/api/v1/grupos-familiares/**").authenticated()
                         .requestMatchers(
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",

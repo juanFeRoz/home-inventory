@@ -22,7 +22,7 @@ import java.util.List;
 public class User implements UserDetails {
 
     @Id
-    private ObjectId id;
+    private String id;
 
     private String username;
 
