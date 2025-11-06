@@ -1,25 +1,34 @@
 package com.example.home_inventory.models;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@Getter
-@Setter
-@NoArgsConstructor
 @Document(collection = "Lugar")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Lugar {
+
     @Id
     private String id;
 
     private String nombre;
+
     private String descripcion;
 
-    @DocumentReference
-    private List<Producto> productos;
+    private LocalDateTime fechaCreacion;
+
+    private String grupoFamiliarId;
+
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private List<Producto> productos = new ArrayList<>();
+
+    private String creadoPor;
 }

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.example.home_inventory.models.Categoria;
+import com.example.home_inventory.models.Lugar;
 import com.example.home_inventory.repository.CategoriaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.home_inventory.models.Producto;
 import com.example.home_inventory.repository.ProductoRepository;
-import com.example.home_inventory.repository.LugarRepositorio;
+import com.example.home_inventory.repository.LugarRepository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ public class ProductoService {
     private ProductoRepository productoRepository;
 
     @Autowired
-    private LugarRepositorio lugarRepositorio;
+    private LugarRepository lugarRepositorio;
 
     @Autowired
     private CategoriaRepository categoriaRepository;
@@ -60,6 +61,37 @@ public class ProductoService {
         return saved;
     }
 
+    private void actualizarProductoEnLugares(String productoId, Producto productoActualizado) {
+        List<Lugar> lugares = lugarRepositorio.findAll();
+        for (Lugar lugar : lugares) {
+            if (lugar.getProductos() != null) {
+                boolean actualizado = false;
+                for (int i = 0; i < lugar.getProductos().size(); i++) {
+                    if (lugar.getProductos().get(i).getId().equals(productoId)) {
+                        lugar.getProductos().set(i, productoActualizado);
+                        actualizado = true;
+                        break;
+                    }
+                }
+                if (actualizado) {
+                    lugarRepositorio.save(lugar);
+                }
+            }
+        }
+    }
+
+    private void eliminarProductoDeLugares(String productoId) {
+        List<Lugar> lugares = lugarRepositorio.findAll();
+        for (Lugar lugar : lugares) {
+            if (lugar.getProductos() != null) {
+                boolean eliminado = lugar.getProductos().removeIf(p -> p.getId().equals(productoId));
+                if (eliminado) {
+                    lugarRepositorio.save(lugar);
+                }
+            }
+        }
+    }
+
     @Transactional
     public boolean deleteProductoById(String id) {
         Optional<Producto> opt = productoRepository.findById(id);
@@ -69,10 +101,32 @@ public class ProductoService {
         Producto producto = opt.get();
         if (producto.getCantidad() > 1) {
             producto.setCantidad(producto.getCantidad() - 1);
-            productoRepository.save(producto);
+            Producto actualizado = productoRepository.save(producto);
+
+            // Actualizar en lugares
+            actualizarProductoEnLugares(id, actualizado);
         } else {
             productoRepository.deleteById(id);
+
+            // Eliminar de lugares
+            eliminarProductoDeLugares(id);
         }
+        return true;
+    }
+
+    @Transactional
+    public boolean deleteProductoCompletamente(String id) {
+        Optional<Producto> opt = productoRepository.findById(id);
+        if (!opt.isPresent()) {
+            return false;
+        }
+
+        // Eliminar de la colección Producto
+        productoRepository.deleteById(id);
+
+        // Eliminar de todos los lugares donde esté embebido
+        eliminarProductoDeLugares(id);
+
         return true;
     }
 
@@ -93,7 +147,26 @@ public class ProductoService {
         // Asignar la categoría al producto
         Producto producto = productoOpt.get();
         producto.setCategoria(categoriaOpt.get());
+        Producto productoActualizado = productoRepository.save(producto);
 
-        return productoRepository.save(producto);
+        // Actualizar el producto embebido en todos los lugares que lo contengan
+        List<Lugar> lugares = lugarRepositorio.findAll();
+        for (Lugar lugar : lugares) {
+            if (lugar.getProductos() != null) {
+                boolean actualizado = false;
+                for (int i = 0; i < lugar.getProductos().size(); i++) {
+                    if (lugar.getProductos().get(i).getId().equals(productoId)) {
+                        lugar.getProductos().set(i, productoActualizado);
+                        actualizado = true;
+                        break;
+                    }
+                }
+                if (actualizado) {
+                    lugarRepositorio.save(lugar);
+                }
+            }
+        }
+
+        return productoActualizado;
     }
 }

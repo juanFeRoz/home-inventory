@@ -88,6 +88,17 @@ public class ProductoController {
         }
     }
 
+    @DeleteMapping("/{id}/completo")
+    public ResponseEntity<String> deleteProductoCompletamente(@PathVariable String id) {
+        boolean deleted = productoService.deleteProductoCompletamente(id);
+
+        if (deleted) {
+            return new ResponseEntity<>("Producto eliminado completamente", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Producto no encontrado", HttpStatus.NOT_FOUND);
+        }
+    }
+
     @PutMapping("/{id}/categoria")
     public ResponseEntity<?> asignarCategoria(@PathVariable String id, @RequestBody Map<String, String> request) {
         try {
