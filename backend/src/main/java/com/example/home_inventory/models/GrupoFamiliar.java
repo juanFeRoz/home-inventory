@@ -1,5 +1,6 @@
 package com.example.home_inventory.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,6 +29,9 @@ public class GrupoFamiliar {
     private List<MiembroInfo> miembros = new ArrayList<>();
 
     private String creadorId;
+
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private List<Lugar> lugares = new ArrayList<>();
 
     @Data
     @AllArgsConstructor
