@@ -179,4 +179,10 @@ public class GrupoFamiliarService {
 
         return convertirADTO(grupoActualizado);
     }
+
+    public String getGrupoFamiliarIdByUser(String userId) {
+        return grupoFamiliarRepository.findByMiembroId(userId)
+                .map(GrupoFamiliar::getId)
+                .orElseThrow(() -> new RuntimeException("El usuario no pertenece a ningún grupo familiar"));
+    }
 }

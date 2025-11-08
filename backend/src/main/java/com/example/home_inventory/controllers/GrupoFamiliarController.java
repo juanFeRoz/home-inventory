@@ -1,6 +1,7 @@
 package com.example.home_inventory.controllers;
 
 import com.example.home_inventory.models.GrupoFamiliarDTO;
+import com.example.home_inventory.models.ListaCompra;
 import com.example.home_inventory.models.User;
 import com.example.home_inventory.repository.UserRepository;
 import com.example.home_inventory.services.GrupoFamiliarService;
@@ -115,6 +116,25 @@ public class GrupoFamiliarController {
             return ResponseEntity.ok(grupo);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/mi-grupo")
+    public ResponseEntity<String> obtenerMiGrupo(@RequestHeader("Authorization") String authHeader) {
+        try {
+            String token = authHeader.substring(7);
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
+            String username = claims.getStringClaim("username");
+
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+            String grupoId = grupoFamiliarService.getGrupoFamiliarIdByUser(user.getId());
+
+            return ResponseEntity.ok(grupoId);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
 

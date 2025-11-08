@@ -33,6 +33,9 @@ public class GrupoFamiliar {
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private List<Lugar> lugares = new ArrayList<>();
 
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    private List<ListaCompra> ListasCompra = new ArrayList<>();
+
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
