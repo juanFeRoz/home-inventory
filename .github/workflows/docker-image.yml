@@ -61,3 +61,9 @@ jobs:
           image: ${{ env.DOCKER_IMAGE }}:latest
           # Allows public (unauthenticated) access
           flags: '--allow-unauthenticated'
+          env: |
+            MONGO_CLUSTER=${{ secrets.MONGO_CLUSTER }}
+            MONGO_DATABASE=${{ secrets.MONGO_DATABASE }}
+            MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}
+            MONGO_USER=${{ secrets.MONGO_USER }}
+            SECRET_KEY=${{ secrets.SECRET_KEY }}
