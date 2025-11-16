@@ -3,8 +3,9 @@ import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { HomePage } from '../dashboard/HomePage';
 import { FamilyGroupPage } from '../familyGroup';
+import { LugarPage } from '../lugares/LugarPage';
 import { Button } from '../ui/button';
-import { LogOut, Home, Users, Package, ShoppingCart, User } from 'lucide-react';
+import { LogOut, Home, Users, Package, ShoppingCart, User, MapPin } from 'lucide-react';
 
 export const DashboardLayout: React.FC = () => {
   const { user, logout } = useAuth();
@@ -64,6 +65,13 @@ export const DashboardLayout: React.FC = () => {
                 Grupos Familiares
               </button>
               <button
+                onClick={() => navigate('/lugares')}
+                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2 transition-colors"
+              >
+                <MapPin size={16} />
+                Lugares
+              </button>
+              <button
                 onClick={() => navigate('/inventario')}
                 className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2 transition-colors"
               >
@@ -104,6 +112,7 @@ export const DashboardLayout: React.FC = () => {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/grupos-familiares" element={<FamilyGroupPage />} />
+          <Route path="/lugares" element={<LugarPage />} />
           <Route path="/inventario" element={<ComingSoonPage title="Inventario" />} />
           <Route path="/listas-compra" element={<ComingSoonPage title="Listas de Compra" />} />
           <Route path="/reportes" element={<ComingSoonPage title="Reportes" />} />

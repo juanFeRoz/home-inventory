@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '../ui/button';
-import { Users, Package, ShoppingCart, Plus, BarChart3, Settings } from 'lucide-react';
+import { Users, Package, ShoppingCart, Plus, BarChart3, Settings, MapPin } from 'lucide-react';
 
 export const HomePage: React.FC = () => {
   const { user } = useAuth();
@@ -18,12 +18,20 @@ export const HomePage: React.FC = () => {
       hoverColor: 'hover:bg-blue-600'
     },
     {
+      icon: MapPin,
+      title: 'Lugares',
+      description: 'Organiza los espacios de tu hogar para mejor gestión',
+      action: () => navigate('/lugares'),
+      color: 'bg-green-500',
+      hoverColor: 'hover:bg-green-600'
+    },
+    {
       icon: Package,
       title: 'Inventario',
       description: 'Administra todos los productos de tu hogar',
       action: () => navigate('/inventario'),
-      color: 'bg-green-500',
-      hoverColor: 'hover:bg-green-600'
+      color: 'bg-teal-500',
+      hoverColor: 'hover:bg-teal-600'
     },
     {
       icon: ShoppingCart,

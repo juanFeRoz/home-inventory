@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosError } from 'axios';
 
-const API_BASE_URL = 'https://home-inventory-58978808961.northamerica-south1.run.app/api/v1';
+const API_BASE_URL = 'http://localhost:8080/api/v1';
 
 class ApiClient {
   private client: AxiosInstance;
