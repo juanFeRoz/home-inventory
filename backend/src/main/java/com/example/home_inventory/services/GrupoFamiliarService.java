@@ -191,7 +191,8 @@ public class GrupoFamiliarService {
         return grupoFamiliarRepository.findByMiembroId(userId)
                 .map(grupo -> Map.of(
                         "nombre", grupo.getNombre() != null ? grupo.getNombre() : "",
-                        "descripcion", grupo.getDescripcion() != null ? grupo.getDescripcion() : ""
+                        "descripcion", grupo.getDescripcion() != null ? grupo.getDescripcion() : "",
+                        "fechaCreacion", grupo.getFechaCreacion() != null ? grupo.getFechaCreacion().toString() : ""
                 ))
                 .orElseThrow(() -> new RuntimeException("El usuario no pertenece a ningún grupo familiar"));
     }
