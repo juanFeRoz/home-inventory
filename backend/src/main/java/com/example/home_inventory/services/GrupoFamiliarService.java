@@ -233,4 +233,10 @@ public class GrupoFamiliarService {
                 })
                 .orElse(new ArrayList<>());
     }
+
+    public boolean isCreador(String userId) {
+        return grupoFamiliarRepository.findByMiembroId(userId)
+                .map(grupo -> grupo.getCreadorId().equals(userId))
+                .orElse(false);
+    }
 }

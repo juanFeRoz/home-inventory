@@ -214,6 +214,25 @@ public class GrupoFamiliarController {
         }
     }
 
+    @GetMapping("/mi-grupo/es-creador")
+    public ResponseEntity<?> esCreadorMiGrupo(@RequestHeader("Authorization") String authHeader) {
+        try {
+            String token = authHeader.substring(7);
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
+            String username = claims.getStringClaim("username");
+
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+            boolean esCreador = grupoFamiliarService.isCreador(user.getId());
+
+            return ResponseEntity.ok(Map.of("esCreador", esCreador));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
     private record CrearGrupoRequest(String nombre, String descripcion) {}
     private record AgregarMiembroRequest(String username) {}
 }
