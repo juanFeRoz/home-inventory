@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { X, Mail, User, Loader2 } from 'lucide-react';
+import { X, User, Loader2 } from 'lucide-react';
 import { grupoFamiliarService } from '../../services/grupoFamiliarService';
 
 interface AddMemberModalProps {
@@ -11,7 +11,7 @@ interface AddMemberModalProps {
 }
 
 interface AddMemberFormData {
-  email: string;
+  username: string;
 }
 
 export const AddMemberModal = ({ isOpen, onClose, groupId, onMemberAdded }: AddMemberModalProps) => {
@@ -30,7 +30,7 @@ export const AddMemberModal = ({ isOpen, onClose, groupId, onMemberAdded }: AddM
     setError('');
 
     try {
-      await grupoFamiliarService.agregarMiembro(groupId, { username: data.email });
+      await grupoFamiliarService.agregarMiembro(groupId, { username: data.username });
       onMemberAdded();
       reset();
       onClose();
@@ -74,29 +74,33 @@ export const AddMemberModal = ({ isOpen, onClose, groupId, onMemberAdded }: AddM
           <div className="space-y-4">
             {/* Email Input */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email del Usuario
+              <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+                Nombre de Usuario
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
+                  <User className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
-                  {...register('email', {
-                    required: 'El email es requerido',
+                  {...register('username', {
+                    required: 'El nombre de usuario es requerido',
+                    minLength: {
+                      value: 3,
+                      message: 'El nombre de usuario debe tener al menos 3 caracteres'
+                    },
                     pattern: {
-                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                      message: 'Email inválido'
+                      value: /^[a-zA-Z0-9_]+$/,
+                      message: 'Solo se permiten letras, números y guiones bajos'
                     }
                   })}
-                  type="email"
-                  id="email"
+                  type="text"
+                  id="username"
                   className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
-                  placeholder="usuario@ejemplo.com"
+                  placeholder="nombre_usuario"
                 />
               </div>
-              {errors.email && (
-                <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>
+              {errors.username && (
+                <p className="mt-1 text-sm text-red-600">{errors.username.message}</p>
               )}
             </div>
 
@@ -110,7 +114,7 @@ export const AddMemberModal = ({ isOpen, onClose, groupId, onMemberAdded }: AddM
             {/* Info Message */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
               <p className="text-sm text-blue-600">
-                Se enviará una invitación al usuario para unirse al grupo familiar.
+                El usuario será agregado directamente al grupo familiar usando su nombre de usuario.
               </p>
             </div>
           </div>

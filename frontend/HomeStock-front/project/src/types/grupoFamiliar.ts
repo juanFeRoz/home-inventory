@@ -49,6 +49,24 @@ export interface GrupoFamiliarState {
   hasGroup: boolean;
 }
 
+// Información completa del grupo con estadísticas
+export interface GrupoFamiliarCompleto {
+  id: string;
+  nombre: string;
+  descripcion: string;
+  cantidadMiembros: number;
+  cantidadProductos: number;
+  miembros: Array<{ username: string; email: string }>;
+  fechaCreacion: string;
+  creadorUsername: string;
+}
+
+// Miembro del grupo con información completa
+export interface MiembroGrupoCompleto {
+  username: string;
+  email: string;
+}
+
 // Props para componentes
 export interface ModalProps {
   isOpen: boolean;

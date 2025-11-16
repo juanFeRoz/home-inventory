@@ -34,39 +34,17 @@ export const FamilyGroupManagement: React.FC = () => {
     try {
       setState(prev => ({ ...prev, isLoading: true, error: null }));
 
-      // Obtener el ID del grupo del usuario
-      const grupoId = await grupoFamiliarService.obtenerMiGrupo();
-
-      // Como no tenemos endpoint para obtener detalles, creamos un grupo temporal
-      const grupoTemporal = {
-        id: grupoId,
-        nombre: 'Mi Grupo Familiar',
-        descripcion: 'Grupo familiar principal',
-        creador: {
-          id: user?.id || '',
-          username: user?.username || '',
-          email: user?.email || ''
-        },
-        miembros: [
-          {
-            id: user?.id || '',
-            username: user?.username || '',
-            email: user?.email || '',
-            fechaUnion: new Date().toISOString(),
-            esCreador: true
-          }
-        ],
-        fechaCreacion: new Date().toISOString()
-      };
+      // Obtener información completa del grupo usando los nuevos endpoints
+      const grupoCompleto = await grupoFamiliarService.obtenerGrupoCompleto(user?.username || '');
 
       setState({
-        grupo: grupoTemporal,
+        grupo: grupoCompleto,
         isLoading: false,
         error: null,
         hasGroup: true,
       });
 
-      console.log('✅ Grupo cargado exitosamente');
+      console.log('✅ Grupo cargado exitosamente con datos reales');
     } catch (error: any) {
       console.error('❌ Error cargando grupo:', error);
       
@@ -96,8 +74,9 @@ export const FamilyGroupManagement: React.FC = () => {
 
   const handleAddMember = async () => {
     setShowAddMemberModal(false);
+    // Recargar los datos completos del grupo para obtener las estadísticas actualizadas
     await loadUserGroup();
-    // toast.success('Miembro agregado exitosamente!');
+    console.log('✅ Miembro agregado y datos actualizados');
   };
 
   const handleDeleteMember = async (username: string) => {
@@ -239,7 +218,9 @@ export const FamilyGroupManagement: React.FC = () => {
         state.grupo && (
           <GroupView
             group={state.grupo}
-            currentUserId={user?.id || ''}
+            currentUserId={user?.username || ''}
+            onDeleteGroup={() => setShowDeleteGroupModal(true)}
+            onDeleteMember={(username) => setMemberToDelete(username)}
           />
         )
       )}
