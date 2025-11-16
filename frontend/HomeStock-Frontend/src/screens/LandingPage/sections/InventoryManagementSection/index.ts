@@ -1,1 +1,0 @@
-export { InventoryManagementSection } from "./InventoryManagementSection";
