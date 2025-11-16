@@ -219,13 +219,16 @@ public class GrupoFamiliarService {
                 .orElse(0);
     }
 
-    public List<String> getUsernamesMiembrosByUser(String userId) {
+    public List<Map<String, String>> getUsernamesMiembrosByUser(String userId) {
         return grupoFamiliarRepository.findByMiembroId(userId)
                 .map(grupo -> {
-                    if (grupo.getMiembros() == null) return new ArrayList<String>();
+                    if (grupo.getMiembros() == null) return new ArrayList<Map<String, String>>();
 
                     return grupo.getMiembros().stream()
-                            .map(GrupoFamiliar.MiembroInfo::getUsername)
+                            .map(miembro -> Map.of(
+                                    "username", miembro.getUsername(),
+                                    "email", miembro.getEmail() != null ? miembro.getEmail() : ""
+                            ))
                             .collect(Collectors.toList());
                 })
                 .orElse(new ArrayList<>());
