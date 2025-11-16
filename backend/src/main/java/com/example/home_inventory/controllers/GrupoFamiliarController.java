@@ -206,9 +206,9 @@ public class GrupoFamiliarController {
             User user = userRepository.findByUsername(username)
                     .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-            List<String> usernames = grupoFamiliarService.getUsernamesMiembrosByUser(user.getId());
+            List<Map<String, String>> miembros = grupoFamiliarService.getUsernamesMiembrosByUser(user.getId());
 
-            return ResponseEntity.ok(Map.of("miembros", usernames));
+            return ResponseEntity.ok(Map.of("miembros", miembros));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
