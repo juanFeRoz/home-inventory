@@ -6,7 +6,6 @@ import com.example.home_inventory.models.User;
 import com.example.home_inventory.models.UserDto;
 import com.example.home_inventory.repository.UserRepository;
 import lombok.AllArgsConstructor;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -47,6 +47,16 @@ public class UserService {
         var user = (User) authentication.getPrincipal();
         String token = tokenService.generateToken(authentication);
         return new LoginResponse(token, user.getUsername(), user.getEmail());
+    }
+
+    public Map<String, String> userInfo(String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        return Map.of(
+                "username", user.getUsername(),
+                "email", user.getEmail()
+        );
     }
 
     //buscar usuario por username

@@ -21,7 +21,7 @@ public class NotificacionService {
     @Autowired
     private ProductoRepository productoRepository;
 
-    @Scheduled(cron = "0 * * * * ?")
+    @Scheduled(cron = "0 0 8 * * ?")
     public void verificarProductos() {
         List<Producto> productos = productoRepository.findAll();
         LocalDate hoy = LocalDate.now();

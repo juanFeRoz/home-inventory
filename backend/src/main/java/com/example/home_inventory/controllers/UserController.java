@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -33,5 +34,15 @@ public class UserController {
     public ResponseEntity<LoginResponse> authenticate(@RequestBody LoginDto loginUserDto) {
         var loginResponse = userService.authenticate(loginUserDto);
         return ResponseEntity.ok(loginResponse);
+    }
+
+    @GetMapping("/info/{userId}")
+    public ResponseEntity<?> obtenerInfoUsuario(@PathVariable String userId) {
+        try {
+            Map<String, String> userInfo = userService.userInfo(userId);
+            return ResponseEntity.ok(userInfo);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
     }
 }
