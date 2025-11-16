@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -184,5 +185,48 @@ public class GrupoFamiliarService {
         return grupoFamiliarRepository.findByMiembroId(userId)
                 .map(GrupoFamiliar::getId)
                 .orElseThrow(() -> new RuntimeException("El usuario no pertenece a ningún grupo familiar"));
+    }
+
+    public Map<String, String> getGrupoFamiliarNombreByUser(String userId) {
+        return grupoFamiliarRepository.findByMiembroId(userId)
+                .map(grupo -> Map.of(
+                        "nombre", grupo.getNombre() != null ? grupo.getNombre() : "",
+                        "descripcion", grupo.getDescripcion() != null ? grupo.getDescripcion() : ""
+                ))
+                .orElseThrow(() -> new RuntimeException("El usuario no pertenece a ningún grupo familiar"));
+    }
+
+    public int getCantidadProductosByUser(String userId) {
+        return grupoFamiliarRepository.findByMiembroId(userId)
+                .map(grupo -> {
+                    if (grupo.getLugares() == null) return 0;
+
+                    return grupo.getLugares().stream()
+                            .filter(lugar -> lugar.getProductos() != null)
+                            .mapToInt(lugar -> lugar.getProductos().size())
+                            .sum();
+                })
+                .orElse(0);
+    }
+
+    public int getCantidadMiembrosByUser(String userId) {
+        return grupoFamiliarRepository.findByMiembroId(userId)
+                .map(grupo -> {
+                    if (grupo.getMiembros() == null) return 0;
+                    return grupo.getMiembros().size();
+                })
+                .orElse(0);
+    }
+
+    public List<String> getUsernamesMiembrosByUser(String userId) {
+        return grupoFamiliarRepository.findByMiembroId(userId)
+                .map(grupo -> {
+                    if (grupo.getMiembros() == null) return new ArrayList<String>();
+
+                    return grupo.getMiembros().stream()
+                            .map(GrupoFamiliar.MiembroInfo::getUsername)
+                            .collect(Collectors.toList());
+                })
+                .orElse(new ArrayList<>());
     }
 }

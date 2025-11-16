@@ -1,20 +1,20 @@
 package com.example.home_inventory.controllers;
 
 import com.example.home_inventory.models.GrupoFamiliarDTO;
-import com.example.home_inventory.models.ListaCompra;
 import com.example.home_inventory.models.User;
 import com.example.home_inventory.repository.UserRepository;
 import com.example.home_inventory.services.GrupoFamiliarService;
-import com.example.home_inventory.services.TokenService;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/grupos-familiares")
@@ -133,6 +133,82 @@ public class GrupoFamiliarController {
             String grupoId = grupoFamiliarService.getGrupoFamiliarIdByUser(user.getId());
 
             return ResponseEntity.ok(grupoId);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/mi-grupo/nombre")
+    public ResponseEntity<?> obtenerNombreMiGrupo(@RequestHeader("Authorization") String authHeader) {
+        try {
+            String token = authHeader.substring(7);
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
+            String username = claims.getStringClaim("username");
+
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+            Map<String, String> grupoInfo = grupoFamiliarService.getGrupoFamiliarNombreByUser(user.getId());
+
+            return ResponseEntity.ok(grupoInfo);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/mi-grupo/cantidad-productos")
+    public ResponseEntity<?> obtenerCantidadProductosMiGrupo(@RequestHeader("Authorization") String authHeader) {
+        try {
+            String token = authHeader.substring(7);
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
+            String username = claims.getStringClaim("username");
+
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+            int cantidadProductos = grupoFamiliarService.getCantidadProductosByUser(user.getId());
+
+            return ResponseEntity.ok(Map.of("cantidadProductos", cantidadProductos));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/mi-grupo/cantidad-miembros")
+    public ResponseEntity<?> obtenerCantidadMiembrosMiGrupo(@RequestHeader("Authorization") String authHeader) {
+        try {
+            String token = authHeader.substring(7);
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
+            String username = claims.getStringClaim("username");
+
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+            int cantidadMiembros = grupoFamiliarService.getCantidadMiembrosByUser(user.getId());
+
+            return ResponseEntity.ok(Map.of("cantidadMiembros", cantidadMiembros));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/mi-grupo/miembros")
+    public ResponseEntity<?> obtenerMiembrosMiGrupo(@RequestHeader("Authorization") String authHeader) {
+        try {
+            String token = authHeader.substring(7);
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
+            String username = claims.getStringClaim("username");
+
+            User user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+            List<String> usernames = grupoFamiliarService.getUsernamesMiembrosByUser(user.getId());
+
+            return ResponseEntity.ok(Map.of("miembros", usernames));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
