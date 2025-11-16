@@ -17,12 +17,6 @@ jobs:
     steps:
       - name: Checkout repository code
         uses: actions/checkout@v4
-      
-      - name: Create .env file
-        working-directory: ./backend
-        run: |
-            echo "${{secrets.ENV_SECRETS}}" > .env
-
 
       # ------------------------ CI: BUILD & PUSH TO DOCKER HUB ------------------------
       - name: Set up Docker Buildx
@@ -61,3 +55,9 @@ jobs:
           image: ${{ env.DOCKER_IMAGE }}:latest
           # Allows public (unauthenticated) access
           flags: '--allow-unauthenticated'
+          env_vars: |
+            MONGO_CLUSTER=${{ secrets.MONGO_CLUSTER }}
+            MONGO_DATABASE=${{ secrets.MONGO_DATABASE }}
+            MONGO_PASSWORD=${{ secrets.MONGO_PASSWORD }}
+            MONGO_USER=${{ secrets.MONGO_USER }}
+            SECRET_KEY=${{ secrets.SECRET_KEY }}
