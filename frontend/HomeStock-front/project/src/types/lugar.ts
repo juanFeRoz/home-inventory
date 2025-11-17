@@ -12,13 +12,18 @@ export interface Lugar {
 export interface Producto {
   id: string;
   nombre: string;
-  descripcion?: string;
+  descripcion: string;
   cantidad: number;
-  fechaVencimiento?: string;
-  categoria?: string;
-  lugarId: string;
-  creadoPor: string;
-  fechaCreacion: string;
+  cantidadMinima: number;
+  expiracion: string; // Formato ISO 8601
+  categoria: {
+    id: string;
+    nombre: string;
+  } | null;
+  lugarId?: string;
+  creadoPor?: string;
+  fechaCreacion?: string;
+  fechaVencimiento?: string; // Para retrocompatibilidad
 }
 
 // DTOs para requests

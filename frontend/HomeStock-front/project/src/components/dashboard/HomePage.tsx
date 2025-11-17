@@ -20,18 +20,10 @@ export const HomePage: React.FC = () => {
     {
       icon: MapPin,
       title: 'Lugares',
-      description: 'Organiza los espacios de tu hogar para mejor gestión',
+      description: 'Organiza el inventario en los espacios de tu hogar para mejor gestión',
       action: () => navigate('/lugares'),
       color: 'bg-green-500',
       hoverColor: 'hover:bg-green-600'
-    },
-    {
-      icon: Package,
-      title: 'Inventario',
-      description: 'Administra todos los productos de tu hogar',
-      action: () => navigate('/inventario'),
-      color: 'bg-teal-500',
-      hoverColor: 'hover:bg-teal-600'
     },
     {
       icon: ShoppingCart,

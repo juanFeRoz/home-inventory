@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { lugarService } from '../../services/lugarService';
 import { LugarDetalleState } from '../../types/lugar';
 import { Button } from '../ui/button';
-import { MapPin, ArrowLeft, Calendar, Package, Trash2, Loader, AlertCircle, User } from 'lucide-react';
+import { MapPin, ArrowLeft, Calendar, Package, Trash2, Loader, AlertCircle, User, Plus, RefreshCw, CheckCircle } from 'lucide-react';
 import { authService } from '../../services/authService';
+import { useProductos } from '../../hooks/useProductos';
+import { CrearProductoModal, ProductoLista } from '../productos';
+import { CrearProductoRequest } from '../../services/productoService';
 
 // Componente para mostrar información del creador en detalle
 const CreatorDetailInfo: React.FC<{ 
@@ -77,9 +80,35 @@ export const LugarDetalle: React.FC<LugarDetalleProps> = ({
     error: null,
   });
 
+  const [showCreateProductModal, setShowCreateProductModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  // Hook para gestión de productos
+  const {
+    state: productosState,
+    crearProducto,
+    reducirCantidad,
+    eliminarCompleto,
+    asignarCategoria,
+    recargarProductos,
+  } = useProductos();
+
   useEffect(() => {
     loadLugarDetalle();
   }, [lugarId]);
+
+  // Limpiar mensajes después de un tiempo
+  useEffect(() => {
+    if (successMessage || errorMessage) {
+      const timer = setTimeout(() => {
+        setSuccessMessage(null);
+        setErrorMessage(null);
+      }, 5000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage, errorMessage]);
 
   const loadLugarDetalle = async () => {
     try {
@@ -126,6 +155,25 @@ export const LugarDetalle: React.FC<LugarDetalleProps> = ({
       return 'Fecha no disponible';
     }
   };
+
+  const handleCrearProducto = async (lugarId: string, productoData: CrearProductoRequest) => {
+    await crearProducto(lugarId, productoData);
+    // Recargar también el detalle del lugar para actualizar el contador
+    await loadLugarDetalle();
+  };
+
+  const handleProductoSuccess = (message: string) => {
+    setSuccessMessage(message);
+    // Recargar el detalle del lugar para actualizar contadores
+    loadLugarDetalle();
+  };
+
+  const handleProductoError = (error: string) => {
+    setErrorMessage(error);
+  };
+
+  // Usar los productos del lugar actual (del estado del lugar)
+  const productosDelLugar = state.productos || [];
 
   if (state.isLoading) {
     return (
@@ -243,59 +291,77 @@ export const LugarDetalle: React.FC<LugarDetalleProps> = ({
         </div>
       </div>
 
-      {/* Lista de productos */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">
-            Productos en este lugar
-          </h2>
-          <span className="text-sm text-gray-500">
-            {productos.length} producto{productos.length !== 1 ? 's' : ''}
-          </span>
+      {/* Mensajes de éxito/error */}
+      {successMessage && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-2">
+          <CheckCircle className="w-5 h-5 text-green-600" />
+          <span className="text-green-800">{successMessage}</span>
         </div>
+      )}
 
-        {productos.length === 0 ? (
-          <div className="text-center py-8">
-            <Package className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-            <p className="text-gray-500 mb-2">No hay productos en este lugar</p>
-            <p className="text-sm text-gray-400">
-              Los productos que se agreguen a este lugar aparecerán aquí
-            </p>
+      {errorMessage && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-2">
+          <AlertCircle className="w-5 h-5 text-red-600" />
+          <span className="text-red-800">{errorMessage}</span>
+        </div>
+      )}
+
+      {/* Header de productos con botón crear */}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-gray-900">
+            Gestión de Productos
+          </h2>
+          
+          <div className="flex gap-3">
+            <Button
+              onClick={() => recargarProductos()}
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Actualizar
+            </Button>
+            
+            <Button
+              onClick={() => setShowCreateProductModal(true)}
+              className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              Agregar Producto
+            </Button>
           </div>
-        ) : (
-          <div className="space-y-3">
-            {productos.map((producto) => (
-              <div
-                key={producto.id}
-                className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50"
-              >
-                <div className="flex items-center">
-                  <div className="bg-blue-100 p-2 rounded-lg mr-3">
-                    <Package className="w-4 h-4 text-blue-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-gray-900">{producto.nombre}</h3>
-                    {producto.descripcion && (
-                      <p className="text-sm text-gray-600">{producto.descripcion}</p>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="text-right">
-                  <p className="text-sm font-medium text-gray-900">
-                    Cantidad: {producto.cantidad}
-                  </p>
-                  {producto.fechaVencimiento && (
-                    <p className="text-xs text-gray-500">
-                      Vence: {formatDate(producto.fechaVencimiento)}
-                    </p>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        </div>
       </div>
+
+      {/* Lista de productos con gestión completa */}
+      <ProductoLista
+        productos={productosDelLugar}
+        isLoading={productosState.isLoading}
+        onReducirCantidad={async (productoId: string) => {
+          await reducirCantidad(productoId);
+          handleProductoSuccess('Cantidad reducida correctamente');
+        }}
+        onEliminarCompleto={async (productoId: string) => {
+          await eliminarCompleto(productoId);
+          handleProductoSuccess('Producto eliminado correctamente');
+        }}
+        onAsignarCategoria={async (productoId: string, categoria: string) => {
+          await asignarCategoria(productoId, categoria);
+          handleProductoSuccess('Categoría asignada correctamente');
+        }}
+      />
+
+      {/* Modal para crear producto */}
+      <CrearProductoModal
+        isOpen={showCreateProductModal}
+        onClose={() => setShowCreateProductModal(false)}
+        lugarId={lugarId}
+        lugarNombre={lugar.nombre}
+        onSuccess={() => handleProductoSuccess('Producto creado correctamente')}
+        onError={handleProductoError}
+        onCrearProducto={handleCrearProducto}
+      />
     </div>
   );
 };

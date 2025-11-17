@@ -5,7 +5,7 @@ import { HomePage } from '../dashboard/HomePage';
 import { FamilyGroupPage } from '../familyGroup';
 import { LugarPage } from '../lugares/LugarPage';
 import { Button } from '../ui/button';
-import { LogOut, Home, Users, Package, ShoppingCart, User, MapPin } from 'lucide-react';
+import { LogOut, Home, Users, ShoppingCart, User, MapPin, Clock } from 'lucide-react';
 
 export const DashboardLayout: React.FC = () => {
   const { user, logout } = useAuth();
@@ -72,13 +72,6 @@ export const DashboardLayout: React.FC = () => {
                 Lugares
               </button>
               <button
-                onClick={() => navigate('/inventario')}
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2 transition-colors"
-              >
-                <Package size={16} />
-                Inventario
-              </button>
-              <button
                 onClick={() => navigate('/listas-compra')}
                 className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2 transition-colors"
               >
@@ -113,7 +106,6 @@ export const DashboardLayout: React.FC = () => {
           <Route path="/" element={<HomePage />} />
           <Route path="/grupos-familiares" element={<FamilyGroupPage />} />
           <Route path="/lugares" element={<LugarPage />} />
-          <Route path="/inventario" element={<ComingSoonPage title="Inventario" />} />
           <Route path="/listas-compra" element={<ComingSoonPage title="Listas de Compra" />} />
           <Route path="/reportes" element={<ComingSoonPage title="Reportes" />} />
           <Route path="*" element={<Navigate to="/" replace />} />
@@ -129,7 +121,7 @@ const ComingSoonPage: React.FC<{ title: string }> = ({ title }) => {
     <div className="text-center py-12">
       <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md mx-auto">
         <div className="bg-gradient-to-r from-blue-600 to-green-600 w-16 h-16 rounded-xl mx-auto mb-6 flex items-center justify-center">
-          <Package className="w-8 h-8 text-white" />
+          <Clock className="w-8 h-8 text-white" />
         </div>
         <h2 className="text-2xl font-bold text-gray-900 mb-4">{title}</h2>
         <p className="text-gray-600 mb-6">
