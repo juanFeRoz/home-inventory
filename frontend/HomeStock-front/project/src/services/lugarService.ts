@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Lugar, CrearLugarRequest, Producto } from '../types/lugar';
 
-const API_BASE_URL = 'http://localhost:8080/api/v1/lugares';
+const API_BASE_URL = 'https://home-inventory-58978808961.northamerica-south1.run.app/api/v1/lugares';
 
 class LugarService {
   
