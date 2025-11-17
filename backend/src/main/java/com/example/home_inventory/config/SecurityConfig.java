@@ -1,5 +1,8 @@
 package com.example.home_inventory.config;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -17,20 +20,16 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
-
-import com.example.home_inventory.repository.UserRepository;
-
-import lombok.AllArgsConstructor;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
-import java.util.List;
+import com.example.home_inventory.repository.UserRepository;
+
+import lombok.AllArgsConstructor;
 
 @Configuration
 @AllArgsConstructor
-
 public class SecurityConfig {
 
     private final JwtConfig jwtConfig;
@@ -39,11 +38,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
+                // 1. Habilitar CORS
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                        
+                        // 🎯 REGLA CRÍTICA: PERMITIR TODAS las solicitudes OPTIONS (Preflight)
+                        // DEBE SER LA PRIMERA REGLA DE AUTORIZACIÓN
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        
+                        // 2. Permitir el SIGNIN y otras rutas de usuario sin autenticar
                         .requestMatchers("/api/v1/user/**").permitAll()
                         .requestMatchers("/api/v1/home/**").permitAll()
+
+                        // 3. Reglas autenticadas
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/grupos-familiares/**").authenticated()
                         .requestMatchers("/api/v1/grupos-familiares/**").authenticated()
                         .requestMatchers(
@@ -88,17 +96,5 @@ public class SecurityConfig {
     UserDetailsService userDetailsService() {
         return username -> userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
     }
 }
