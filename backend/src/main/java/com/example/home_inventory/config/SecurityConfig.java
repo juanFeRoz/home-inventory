@@ -97,28 +97,4 @@ public class SecurityConfig {
         return username -> userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        
-        // 🎯 Configuración de orígenes permitidos
-        configuration.setAllowedOrigins(List.of(
-            "http://localhost:5173",
-            "https://eighth-codex-473914-g0.web.app",
-            "https://eighth-codex-473914-g0.firebaseapp.com"
-        ));
-        
-        // Métodos y cabeceras
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(List.of("*"));
-        
-        // Permitir credenciales (Authorization header)
-        configuration.setAllowCredentials(true);
-        
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        // Aplicar a todas las rutas
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
 }
