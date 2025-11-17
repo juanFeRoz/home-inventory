@@ -32,10 +32,10 @@ public class ProductoController {
         return new ResponseEntity<Optional<Producto>>(productoService.findByNombre(nombre), HttpStatus.OK);
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> createProducto(@RequestBody Map<String, String> payload) {
+    @PostMapping(value = "/lugares/{lugarId}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> createProducto(@PathVariable String lugarId, @RequestBody Map<String, String> payload) {
         if (payload == null || payload.get("nombre") == null || payload.get("nombre").isBlank()) {
-            return new ResponseEntity<>("El nombre es obligatorio",HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("El nombre es obligatorio", HttpStatus.BAD_REQUEST);
         }
 
         // parse integers safely
@@ -72,7 +72,7 @@ public class ProductoController {
                 cantidad,
                 cantidadMinima,
                 expiracion,
-                payload.get("nombreLugar"));
+                lugarId);
 
         return new ResponseEntity<Producto>(created, HttpStatus.OK);
     }

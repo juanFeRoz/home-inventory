@@ -42,7 +42,7 @@ public class ProductoService {
         return productoRepository.findByNombre(nombre);
     }
 
-    public Producto createProducto(String nombre, String descripcion, int cantidad, int cantidadMinima, LocalDate expiracion, String nombreLugar) {
+    public Producto createProducto(String nombre, String descripcion, int cantidad, int cantidadMinima, LocalDate expiracion, String lugarId) {
         Producto producto = new Producto();
         producto.setNombre(nombre);
         producto.setDescripcion(descripcion);
@@ -51,8 +51,8 @@ public class ProductoService {
         producto.setExpiracion(expiracion);
         Producto saved = productoRepository.insert(producto);
 
-        if (saved.getId() != null && nombreLugar != null) {
-            lugarRepositorio.findByNombre(nombreLugar).ifPresent(lugar -> {
+        if (saved.getId() != null && lugarId != null) {
+            lugarRepositorio.findById(lugarId).ifPresent(lugar -> {
                 if (lugar.getProductos() == null) {
                     lugar.setProductos(new ArrayList<>());
                 }
