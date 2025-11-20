@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios';
 import { ListaCompra, ProductoLista } from '../types/listaCompra';
 
-const API_BASE = 'http://localhost:8080/api/v1';
+const API_BASE = 'https://home-inventory-58978808961.northamerica-south1.run.app/api/v1';
 
 const client = axios.create({
   baseURL: API_BASE,

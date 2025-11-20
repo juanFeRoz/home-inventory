@@ -2,7 +2,7 @@ import axios from 'axios';
 import { Categoria, CrearCategoriaRequest } from '../types/categoria';
 
 // Usar localhost para categorías pero con el cliente configurado con auth
-const API_BASE_URL = 'http://localhost:8080/api/v1';
+const API_BASE_URL = 'https://home-inventory-58978808961.northamerica-south1.run.app/api/v1';
 
 class CategoriaService {
   private readonly endpoint = '/categorias';
