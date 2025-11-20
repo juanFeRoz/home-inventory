@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { lugarService } from '../../services/lugarService';
 import { LugarDetalleState } from '../../types/lugar';
 import { Button } from '../ui/button';
-import { MapPin, ArrowLeft, Calendar, Package, Trash2, Loader, AlertCircle, User, Plus, RefreshCw, CheckCircle } from 'lucide-react';
+import { MapPin, ArrowLeft, Calendar, Package, Trash2, Loader, AlertCircle, User, Plus, RefreshCw, CheckCircle, Tags } from 'lucide-react';
 import { authService } from '../../services/authService';
 import { useProductos } from '../../hooks/useProductos';
 import { CrearProductoModal, ProductoLista } from '../productos';
+import { CategoriasModal } from '../categorias';
 import { CrearProductoRequest } from '../../services/productoService';
 
 // Componente para mostrar información del creador en detalle
@@ -81,6 +82,7 @@ export const LugarDetalle: React.FC<LugarDetalleProps> = ({
   });
 
   const [showCreateProductModal, setShowCreateProductModal] = useState(false);
+  const [showCategoriasModal, setShowCategoriasModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -218,10 +220,10 @@ export const LugarDetalle: React.FC<LugarDetalleProps> = ({
             <Button
               onClick={onBack}
               variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
+              size="lg"
+              className="flex items-center gap-3"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-6 h-6" />
               Volver
             </Button>
             
@@ -231,7 +233,7 @@ export const LugarDetalle: React.FC<LugarDetalleProps> = ({
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">{lugar.nombre}</h1>
-                <p className="text-gray-600">Detalle del lugar</p>
+                
               </div>
             </div>
           </div>
@@ -315,6 +317,15 @@ export const LugarDetalle: React.FC<LugarDetalleProps> = ({
           
           <div className="flex gap-3">
             <Button
+              onClick={() => setShowCategoriasModal(true)}
+              variant="outline"
+              className="flex items-center gap-2 text-blue-600 border-blue-200 hover:bg-blue-50"
+            >
+              <Tags className="w-4 h-4" />
+              Categorías
+            </Button>
+            
+            <Button
               onClick={() => recargarProductos()}
               variant="outline"
               className="flex items-center gap-2"
@@ -361,6 +372,12 @@ export const LugarDetalle: React.FC<LugarDetalleProps> = ({
         onSuccess={() => handleProductoSuccess('Producto creado correctamente')}
         onError={handleProductoError}
         onCrearProducto={handleCrearProducto}
+      />
+
+      {/* Modal para gestionar categorías */}
+      <CategoriasModal
+        isOpen={showCategoriasModal}
+        onClose={() => setShowCategoriasModal(false)}
       />
     </div>
   );

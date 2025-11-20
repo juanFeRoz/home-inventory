@@ -5,6 +5,7 @@ import { grupoFamiliarService } from '../../services/grupoFamiliarService';
 import { LugarState } from '../../types/lugar';
 import { LugarLista } from './LugarLista.tsx';
 import { CrearLugarModal } from './CrearLugarModal.tsx';
+import { CreateGroupModal } from '../familyGroup/CreateGroupModal';
 import { LugarDetalle } from './LugarDetalle.tsx';
 import { ConfirmModal } from '../familyGroup/ConfirmModal';
 import { Button } from '../ui/button';
@@ -27,6 +28,7 @@ export const LugarManagement: React.FC = () => {
 
   // Estados para modales
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
 
   // Cargar grupo familiar del usuario y sus lugares
   useEffect(() => {
@@ -55,11 +57,9 @@ export const LugarManagement: React.FC = () => {
       console.error('❌ Error cargando lugares:', error);
       
       if (error.message === 'NO_GROUP') {
-        setState({
-          lugares: [],
-          isLoading: false,
-          error: 'No perteneces a ningún grupo familiar. Debes unirte a un grupo para gestionar lugares.',
-        });
+        // Usuario sin grupo: abrir modal de crear grupo
+        setState({ lugares: [], isLoading: false, error: null });
+        setShowCreateGroupModal(true);
       } else {
         setState(prev => ({
           ...prev,
@@ -134,7 +134,7 @@ export const LugarManagement: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       {/* Header */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <div className="flex items-center justify-between">
@@ -200,6 +200,17 @@ export const LugarManagement: React.FC = () => {
           userId={user?.id || ''}
         />
       )}
+
+      {/* Modal para crear grupo si el usuario aún no tiene uno */}
+      <CreateGroupModal
+        isOpen={showCreateGroupModal}
+        onClose={() => setShowCreateGroupModal(false)}
+        onSuccess={async () => {
+          // Después de crear el grupo, recargar datos y cerrar modal
+          setShowCreateGroupModal(false);
+          await loadUserGroupAndPlaces();
+        }}
+      />
 
       <ConfirmModal
         isOpen={!!lugarToDelete}

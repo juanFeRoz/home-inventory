@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Producto } from '../../services/productoService';
 import { Button } from '../ui/button';
+import { useCategorias } from '../../hooks/useCategorias';
 import { 
   Package, 
   Minus, 
@@ -88,8 +89,14 @@ const AsignarCategoriaModal: React.FC<AsignarCategoriaModalProps> = ({
 }) => {
   const [categoria, setCategoria] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const { categorias, loading: categoriasLoading } = useCategorias();
 
-  const categoriasSugeridas = ['Cereales', 'Lácteos', 'Carnes', 'Verduras', 'Frutas', 'Bebidas', 'Limpieza', 'Higiene'];
+  // Reset categoria when modal opens/closes
+  useEffect(() => {
+    if (isOpen) {
+      setCategoria('');
+    }
+  }, [isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -105,6 +112,10 @@ const AsignarCategoriaModal: React.FC<AsignarCategoriaModalProps> = ({
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleCategoriaClick = (nombreCategoria: string) => {
+    setCategoria(nombreCategoria);
   };
 
   if (!isOpen || !producto) return null;
@@ -136,20 +147,36 @@ const AsignarCategoriaModal: React.FC<AsignarCategoriaModalProps> = ({
           </div>
 
           <div>
-            <p className="text-sm text-gray-600 mb-2">Categorías sugeridas:</p>
-            <div className="flex flex-wrap gap-2">
-              {categoriasSugeridas.map((cat) => (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => setCategoria(cat)}
-                  className="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded-full transition-colors"
-                  disabled={isLoading}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
+            <p className="text-sm text-gray-600 mb-2">Categorías disponibles:</p>
+            {categoriasLoading ? (
+              <div className="text-center py-4">
+                <p className="text-sm text-gray-500">Cargando categorías...</p>
+              </div>
+            ) : categorias.length === 0 ? (
+              <div className="text-center py-4">
+                <p className="text-sm text-gray-500 mb-2">No hay categorías disponibles</p>
+                <p className="text-xs text-gray-400">Crea categorías desde el botón "Categorías" en la gestión de productos</p>
+              </div>
+            ) : (
+              <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
+                {categorias.map((cat) => (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    onClick={() => handleCategoriaClick(cat.nombre)}
+                    className={`px-3 py-1 text-xs rounded-full transition-colors capitalize ${
+                      categoria === cat.nombre
+                        ? 'bg-blue-100 text-blue-800 border border-blue-200'
+                        : 'bg-gray-100 hover:bg-gray-200'
+                    }`}
+                    disabled={isLoading}
+                    title={cat.descripcion || cat.nombre}
+                  >
+                    {cat.nombre}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="flex gap-3">
@@ -317,7 +344,7 @@ export const ProductoLista: React.FC<ProductoListaProps> = ({
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <h4 className="font-semibold text-gray-900">{producto.nombre}</h4>
+                      <h4 className="text-lg font-semibold text-gray-900">{producto.nombre}</h4>
                       
                       {/* Badges de estado */}
                       {vencido && (
@@ -343,10 +370,10 @@ export const ProductoLista: React.FC<ProductoListaProps> = ({
                     </div>
 
                     {producto.descripcion && (
-                      <p className="text-gray-600 text-sm mb-3">{producto.descripcion}</p>
+                      <p className="text-gray-600 text-base mb-3">{producto.descripcion}</p>
                     )}
 
-                    <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+                    <div className="flex flex-wrap gap-4 text-base text-gray-500">
                       <div className="flex items-center gap-1">
                         <Hash className="w-4 h-4" />
                         <span>Cantidad: <strong>{producto.cantidad}</strong></span>
@@ -374,35 +401,35 @@ export const ProductoLista: React.FC<ProductoListaProps> = ({
                   </div>
 
                   {/* Acciones */}
-                  <div className="flex gap-2 ml-4">
+                  <div className="flex gap-3 ml-4 items-center justify-center h-full">
                     <Button
                       onClick={() => setCategoriaModal({ isOpen: true, producto })}
                       variant="outline"
-                      size="sm"
-                      className="p-2"
+                      size="lg"
+                      className="p-4 h-12 w-12 flex items-center justify-center"
                       title="Asignar categoría"
                     >
-                      <Tag className="w-4 h-4" />
+                      <Tag className="w-6 h-6" />
                     </Button>
 
                     <Button
                       onClick={() => setConfirmModal({ isOpen: true, type: 'reducir', producto })}
                       variant="outline"
-                      size="sm"
-                      className="p-2 text-orange-600 border-orange-300 hover:bg-orange-50"
+                      size="lg"
+                      className="p-4 h-12 w-12 flex items-center justify-center text-orange-600 border-orange-300 hover:bg-orange-50"
                       title="Reducir cantidad (-1)"
                     >
-                      <Minus className="w-4 h-4" />
+                      <Minus className="w-6 h-6" />
                     </Button>
 
                     <Button
                       onClick={() => setConfirmModal({ isOpen: true, type: 'eliminar', producto })}
                       variant="outline"
-                      size="sm"
-                      className="p-2 text-red-600 border-red-300 hover:bg-red-50"
+                      size="lg"
+                      className="p-4 h-12 w-12 flex items-center justify-center text-red-600 border-red-300 hover:bg-red-50"
                       title="Eliminar completamente"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-6 h-6" />
                     </Button>
                   </div>
                 </div>

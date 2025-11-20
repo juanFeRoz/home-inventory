@@ -116,12 +116,12 @@ export const GroupView = ({ group, currentUserId, onDeleteGroup, onDeleteMember 
           </div>
         </div>
 
-        <div className="bg-green-50 rounded-lg p-4">
+        <div className="bg-orange-50 rounded-lg p-4">
           <div className="flex items-center">
-            <Package className="w-8 h-8 text-green-600" />
+            <Package className="w-8 h-8 text-orange-600" />
             <div className="ml-3">
-              <p className="text-sm font-medium text-green-600">Productos</p>
-              <p className="text-2xl font-bold text-green-900">{(group as any).cantidadProductos || 0}</p>
+              <p className="text-sm font-medium text-orange-600">Productos</p>
+              <p className="text-2xl font-bold text-orange-900">{(group as any).cantidadProductos || 0}</p>
             </div>
           </div>
         </div>

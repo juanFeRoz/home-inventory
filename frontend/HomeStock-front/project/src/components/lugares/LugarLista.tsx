@@ -149,10 +149,10 @@ export const LugarLista: React.FC<LugarListaProps> = ({
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold text-gray-900">
+        <h2 className="text-xl font-semibold text-gray-900">
           Lugares del Hogar
         </h2>
-        <span className="text-sm text-gray-500">
+        <span className="text-base text-gray-500">
           {lugares.length} lugar{lugares.length !== 1 ? 'es' : ''}
         </span>
       </div>
@@ -175,7 +175,7 @@ export const LugarLista: React.FC<LugarListaProps> = ({
                     <MapPin className="w-5 h-5 text-green-600" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">{lugar.nombre}</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">{lugar.nombre}</h3>
                     <CreatorInfo 
                       creadoPor={lugar.creadoPor} 
                       currentUserId={currentUserId} 
@@ -211,16 +211,16 @@ export const LugarLista: React.FC<LugarListaProps> = ({
 
               {/* Descripción */}
               {lugar.descripcion && (
-                <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                <p className="text-base text-gray-600 mb-3 line-clamp-2">
                   {lugar.descripcion}
                 </p>
               )}
 
               {/* Estadísticas */}
-              <div className="bg-gray-50 rounded-lg p-3 mb-3">
+              <div className="bg-orange-50 rounded-lg p-3 mb-3">
                 <div className="flex items-center justify-center">
-                  <Package className="w-4 h-4 text-gray-500 mr-2" />
-                  <span className="text-sm text-gray-700">
+                  <Package className="w-4 h-4 text-orange-600 mr-2" />
+                  <span className="text-base font-medium text-orange-900">
                     {productCount} producto{productCount !== 1 ? 's' : ''}
                   </span>
                 </div>

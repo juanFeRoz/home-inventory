@@ -46,8 +46,9 @@ class GrupoFamiliarService {
     } catch (error: any) {
       console.error('❌ Error obteniendo mi grupo:', error);
       
-      // Si es un 404, significa que el usuario no tiene grupo
-      if (error.response?.status === 404) {
+      // Si es un 404 o 400, significa que el usuario no tiene grupo
+      const status = error.response?.status;
+      if (status === 404 || status === 400) {
         throw new Error('NO_GROUP');
       }
       

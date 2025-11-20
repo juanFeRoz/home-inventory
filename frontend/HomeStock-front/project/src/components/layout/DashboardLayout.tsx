@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { HomePage } from '../dashboard/HomePage';
+import ListaCompraManager from '../listasCompra/ListaCompraManager.tsx';
 import { FamilyGroupPage } from '../familyGroup';
 import { LugarPage } from '../lugares/LugarPage';
 import { Button } from '../ui/button';
@@ -21,7 +22,7 @@ export const DashboardLayout: React.FC = () => {
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center h-20">
             {/* Logo */}
             <div className="flex items-center">
               <div className="bg-gradient-to-r from-blue-600 to-green-600 w-8 h-8 rounded-lg mr-3 flex items-center justify-center">
@@ -45,54 +46,54 @@ export const DashboardLayout: React.FC = () => {
                   />
                 </svg>
               </div>
-              <h1 className="text-xl font-bold text-gray-900">HomeStock</h1>
+              <h1 className="text-2xl font-bold text-gray-900">HomeStock</h1>
             </div>
 
             {/* Navigation */}
             <nav className="hidden md:flex space-x-8">
               <button
                 onClick={() => navigate('/')}
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2 transition-colors"
+                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-base font-medium flex items-center gap-2 transition-colors"
               >
-                <Home size={16} />
+                <Home size={18} />
                 Inicio
               </button>
               <button
                 onClick={() => navigate('/grupos-familiares')}
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2 transition-colors"
+                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-base font-medium flex items-center gap-2 transition-colors"
               >
-                <Users size={16} />
+                <Users size={18} />
                 Grupos Familiares
               </button>
               <button
                 onClick={() => navigate('/lugares')}
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2 transition-colors"
+                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-base font-medium flex items-center gap-2 transition-colors"
               >
-                <MapPin size={16} />
+                <MapPin size={18} />
                 Lugares
               </button>
               <button
                 onClick={() => navigate('/listas-compra')}
-                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium flex items-center gap-2 transition-colors"
+                className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-base font-medium flex items-center gap-2 transition-colors"
               >
-                <ShoppingCart size={16} />
+                <ShoppingCart size={18} />
                 Listas de Compra
               </button>
             </nav>
 
             {/* User menu */}
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 text-sm text-gray-600">
-                <User size={16} />
+              <div className="flex items-center gap-2 text-base text-gray-600">
+                <User size={18} />
                 <span>Hola, {user?.username}</span>
               </div>
               <Button
                 onClick={handleLogout}
                 variant="outline"
-                size="sm"
+                size="default"
                 className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
               >
-                <LogOut size={16} />
+                <LogOut size={18} />
                 Cerrar Sesión
               </Button>
             </div>
@@ -101,12 +102,12 @@ export const DashboardLayout: React.FC = () => {
       </header>
 
       {/* Main content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/grupos-familiares" element={<FamilyGroupPage />} />
           <Route path="/lugares" element={<LugarPage />} />
-          <Route path="/listas-compra" element={<ComingSoonPage title="Listas de Compra" />} />
+          <Route path="/listas-compra" element={<ListaCompraManager />} />
           <Route path="/reportes" element={<ComingSoonPage title="Reportes" />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
