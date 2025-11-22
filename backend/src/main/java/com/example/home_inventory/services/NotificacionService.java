@@ -21,7 +21,8 @@ public class NotificacionService {
     @Autowired
     private ProductoRepository productoRepository;
 
-    @Scheduled(cron = "0 0 8 * * ?")
+    /*
+    @Scheduled(cron = "")
     public void verificarProductos() {
         List<Producto> productos = productoRepository.findAll();
         LocalDate hoy = LocalDate.now();
@@ -49,7 +50,7 @@ public class NotificacionService {
                 );
             }
         }
-    }
+    }*/
 
     private void crearNotificacion(String productoId, String mensaje, String tipo) {
         Notificacion notificacion = new Notificacion();
