@@ -1,4 +1,14 @@
-import axios from 'axios';
+import { axiosInstance } from './apiClient';
+
+// Helper temporal para debug: imprime token de auth
+const debugAuthToken = () => {
+  try {
+    const token = localStorage.getItem('authToken');
+    console.log('🔐 authToken (localStorage):', token ? 'EXISTS' : 'MISSING');
+  } catch (e) {
+    console.log('🔐 authToken: error al acceder a localStorage', e);
+  }
+};
 import { 
   GrupoFamiliar, 
   CrearGrupoRequest, 
@@ -14,18 +24,16 @@ class GrupoFamiliarService {
    */
   async crearGrupo(grupoData: CrearGrupoRequest): Promise<GrupoFamiliar> {
     try {
+      debugAuthToken();
       console.log('🔄 Creando grupo familiar:', grupoData);
       
-      const response = await axios.post<GrupoFamiliar>(API_BASE_URL, grupoData, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await axiosInstance.post<GrupoFamiliar>(API_BASE_URL, grupoData);
 
       console.log('✅ Grupo creado exitosamente:', response.data);
       return response.data;
     } catch (error: any) {
       console.error('❌ Error creando grupo:', error);
+      console.error('❌ Detalle respuesta backend:', error.response?.data);
       const errorMessage = error.response?.data?.message || 'Error al crear el grupo familiar';
       throw new Error(errorMessage);
     }
@@ -36,20 +44,21 @@ class GrupoFamiliarService {
    */
   async obtenerMiGrupo(): Promise<string> {
     try {
+      debugAuthToken();
       console.log('🔄 Obteniendo mi grupo familiar...');
-      
-      const response = await axios.get<string>(`${API_BASE_URL}/mi-grupo`);
+      const response = await axiosInstance.get<string>(`${API_BASE_URL}/mi-grupo`);
 
       console.log('✅ Mi grupo ID obtenido:', response.data);
       return response.data;
     } catch (error: any) {
       console.error('❌ Error obteniendo mi grupo:', error);
-      
-      // Si es un 404, significa que el usuario no tiene grupo
-      if (error.response?.status === 404) {
+      console.error('❌ Detalle respuesta backend:', error.response?.data);
+      // Si es un 404 o 400, tratamos como "NO_GROUP" (usuario sin grupo)
+      if (error.response?.status === 404 || error.response?.status === 400) {
+        console.log('ℹ️ Usuario aparentemente SIN grupo (status:', error.response?.status, ')');
         throw new Error('NO_GROUP');
       }
-      
+
       const errorMessage = error.response?.data?.message || 'Error al obtener el grupo';
       throw new Error(errorMessage);
     }
@@ -60,14 +69,16 @@ class GrupoFamiliarService {
    */
   async obtenerInfoMiGrupo(): Promise<{ nombre: string; descripcion: string; fechaCreacion: string }> {
     try {
+      debugAuthToken();
       console.log('🔄 Obteniendo información del grupo...');
       
-      const response = await axios.get<{ nombre: string; descripcion: string; fechaCreacion: string }>(`${API_BASE_URL}/mi-grupo/nombre`);
+      const response = await axiosInstance.get<{ nombre: string; descripcion: string; fechaCreacion: string }>(`${API_BASE_URL}/mi-grupo/nombre`);
 
       console.log('✅ Información del grupo obtenida:', response.data);
       return response.data;
     } catch (error: any) {
       console.error('❌ Error obteniendo información del grupo:', error);
+      console.error('❌ Detalle respuesta backend:', error.response?.data);
       const errorMessage = error.response?.data?.message || 'Error al obtener la información del grupo';
       throw new Error(errorMessage);
     }
@@ -78,14 +89,16 @@ class GrupoFamiliarService {
    */
   async obtenerCantidadProductos(): Promise<number> {
     try {
+      debugAuthToken();
       console.log('🔄 Obteniendo cantidad de productos...');
       
-      const response = await axios.get<{ cantidadProductos: number }>(`${API_BASE_URL}/mi-grupo/cantidad-productos`);
+      const response = await axiosInstance.get<{ cantidadProductos: number }>(`${API_BASE_URL}/mi-grupo/cantidad-productos`);
 
       console.log('✅ Cantidad de productos obtenida:', response.data.cantidadProductos);
       return response.data.cantidadProductos;
     } catch (error: any) {
       console.error('❌ Error obteniendo cantidad de productos:', error);
+      console.error('❌ Detalle respuesta backend:', error.response?.data);
       const errorMessage = error.response?.data?.message || 'Error al obtener la cantidad de productos';
       throw new Error(errorMessage);
     }
@@ -96,14 +109,16 @@ class GrupoFamiliarService {
    */
   async obtenerCantidadMiembros(): Promise<number> {
     try {
+      debugAuthToken();
       console.log('🔄 Obteniendo cantidad de miembros...');
       
-      const response = await axios.get<{ cantidadMiembros: number }>(`${API_BASE_URL}/mi-grupo/cantidad-miembros`);
+      const response = await axiosInstance.get<{ cantidadMiembros: number }>(`${API_BASE_URL}/mi-grupo/cantidad-miembros`);
 
       console.log('✅ Cantidad de miembros obtenida:', response.data.cantidadMiembros);
       return response.data.cantidadMiembros;
     } catch (error: any) {
       console.error('❌ Error obteniendo cantidad de miembros:', error);
+      console.error('❌ Detalle respuesta backend:', error.response?.data);
       const errorMessage = error.response?.data?.message || 'Error al obtener la cantidad de miembros';
       throw new Error(errorMessage);
     }
@@ -114,9 +129,10 @@ class GrupoFamiliarService {
    */
   async obtenerMiembrosGrupo(): Promise<Array<{username: string, email: string}>> {
     try {
+      debugAuthToken();
       console.log('🔄 Obteniendo miembros del grupo...');
       
-      const response = await axios.get(`${API_BASE_URL}/mi-grupo/miembros`);
+      const response = await axiosInstance.get(`${API_BASE_URL}/mi-grupo/miembros`);
 
       console.log('✅ Respuesta completa del backend:', response.data);
 
@@ -125,6 +141,7 @@ class GrupoFamiliarService {
       return response.data.miembros;
     } catch (error: any) {
       console.error('❌ Error obteniendo miembros del grupo:', error);
+      console.error('❌ Detalle respuesta backend:', error.response?.data);
       const errorMessage = error.response?.data?.message || 'Error al obtener los miembros del grupo';
       throw new Error(errorMessage);
     }
@@ -136,10 +153,20 @@ class GrupoFamiliarService {
   async obtenerGrupoCompleto(currentUsername: string): Promise<any> {
     try {
       console.log('🔄 Obteniendo información completa del grupo...');
-      
-      // Ejecutar todas las peticiones en paralelo para mejor rendimiento
-      const [grupoId, grupoInfo, cantidadProductos, cantidadMiembros, miembros, esCreador] = await Promise.all([
-        this.obtenerMiGrupo(),
+      // Primero validar si el usuario tiene grupo. Si no, lanzamos 'NO_GROUP' inmediatamente
+      let grupoId: string;
+      try {
+        grupoId = await this.obtenerMiGrupo();
+      } catch (e: any) {
+        if (e?.message === 'NO_GROUP') {
+          console.log('ℹ️ obtenerGrupoCompleto: usuario sin grupo, abortando llamadas adicionales.');
+          throw e; // Propagar para que el llamador abra el modal de creación
+        }
+        throw e;
+      }
+
+      // Ejecutar las demás peticiones en paralelo ahora que sabemos que hay un grupo
+      const [grupoInfo, cantidadProductos, cantidadMiembros, miembros, esCreador] = await Promise.all([
         this.obtenerInfoMiGrupo(),
         this.obtenerCantidadProductos(),
         this.obtenerCantidadMiembros(),
@@ -211,13 +238,10 @@ class GrupoFamiliarService {
    */
   async agregarMiembro(grupoId: string, miembroData: AgregarMiembroRequest): Promise<GrupoFamiliar> {
     try {
+      debugAuthToken();
       console.log('🔄 Agregando miembro al grupo:', { grupoId, username: miembroData.username });
       
-      const response = await axios.post<GrupoFamiliar>(`${API_BASE_URL}/${grupoId}/miembros`, miembroData, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await axiosInstance.post<GrupoFamiliar>(`${API_BASE_URL}/${grupoId}/miembros`, miembroData);
 
       console.log('✅ Miembro agregado exitosamente');
       return response.data;
@@ -233,9 +257,10 @@ class GrupoFamiliarService {
    */
   async eliminarMiembro(grupoId: string, username: string): Promise<void> {
     try {
+      debugAuthToken();
       console.log('🔄 Eliminando miembro del grupo:', { grupoId, username });
       
-      await axios.delete(`${API_BASE_URL}/${grupoId}/miembros/${username}`);
+      await axiosInstance.delete(`${API_BASE_URL}/${grupoId}/miembros/${username}`);
 
       console.log('✅ Miembro eliminado exitosamente');
     } catch (error: any) {
@@ -250,9 +275,10 @@ class GrupoFamiliarService {
    */
   async eliminarGrupo(grupoId: string): Promise<void> {
     try {
+      debugAuthToken();
       console.log('🔄 Eliminando grupo:', grupoId);
       
-      await axios.delete(`${API_BASE_URL}/${grupoId}`);
+      await axiosInstance.delete(`${API_BASE_URL}/${grupoId}`);
 
       console.log('✅ Grupo eliminado exitosamente');
     } catch (error: any) {
@@ -267,9 +293,10 @@ class GrupoFamiliarService {
    */
   async esCreadorDelGrupo(): Promise<boolean> {
     try {
+      debugAuthToken();
       console.log('🔄 Verificando si es creador del grupo...');
       
-      const response = await axios.get<{ esCreador: boolean }>(`${API_BASE_URL}/mi-grupo/es-creador`);
+      const response = await axiosInstance.get<{ esCreador: boolean }>(`${API_BASE_URL}/mi-grupo/es-creador`);
 
 
       return response.data.esCreador;
